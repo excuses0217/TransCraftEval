@@ -8,8 +8,15 @@ __pycache__/
 artifacts/
 data/
 models/*.onnx
+models/**/*.onnx
 frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 .codex_work/
+.codex-artifacts/
+design-qa.md
 deliverables/
 docs/
 !docs/
@@ -21,5 +28,7 @@ docs/*
 !docs/reviewer_workflow.md
 !docs/system_user_guide.md
 !docs/system_operations.md
+!docs/frontend_migration_plan.md
+!docs/precision_first_face_validation.md
 output/
 scripts/build_openrouter_china_report.py

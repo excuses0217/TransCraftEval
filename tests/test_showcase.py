@@ -28,7 +28,10 @@ def test_bundle_portable_and_persistent(tmp_path):
     seed,catalog=load_bundle(bundle)
     state=tmp_path/'runtime/state.json'
     c=TestClient(create_app(seed_state=seed,media_catalog=catalog,bundled_dir=bundle,state_file=state))
-    assert c.get('/api/library-items').json()==seed['library_items']
+    library = c.get('/api/library-items').json()
+    assert {key: library[0][key] for key in seed['library_items'][0]} == seed['library_items'][0]
+    assert library[0]['validation']['status'] == 'not_started'
+    assert library[0]['lifecycle_history'] == []
     assert c.get('/api/local-media').json()[0]['path']==str(bundle/'clip.mp4')
     assert c.get('/bundled/clip.mp4',headers={'Range':'bytes=0-1'}).status_code==206
     item=c.get('/api/library-items').json()[0]
@@ -63,11 +66,11 @@ def test_task_uses_bundled_references(tmp_path, monkeypatch):
     fixture_bundle(bundle)
     seed,catalog=load_bundle(bundle)
     received=[]
-    def run(analyzer, video, people, output, progress):
+    def run(analyzer, video, people, output, progress, interval, policy):
         received.append(people[0]['paths'])
         assert video==bundle/'clip.mp4'
         return {'events':[], 'metrics':{'coverage_complete':True}, 'reference_snapshot':[]}
-    monkeypatch.setattr('face_watch.review_runner.run_review',run)
+    monkeypatch.setattr('face_watch.video_track_runner.run_track_review',run)
     class Analyzer:
         _analysis_lock=Lock()
     client=TestClient(create_app(analyzer=Analyzer(), seed_state=seed, media_catalog=catalog,
@@ -78,5 +81,7 @@ def test_task_uses_bundled_references(tmp_path, monkeypatch):
         if task['status']!='running':
             break
         time.sleep(.01)
-    assert task['status']=='needs_review'
+    assert task['status']=='completed'
+    assert task['candidate_count']==0
+    assert task['audit_versions'][0]['events']==[]
     assert received==[[bundle/'ref.jpg']]

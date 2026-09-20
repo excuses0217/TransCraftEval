@@ -14,7 +14,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     port = int(os.getenv('FACE_WATCH_PORT', '8770'))
     base = f'http://127.0.0.1:{port}'
-    url = base+'/?workspace=validation#media'
+    url = base+'/?workspace=validation#/overview'
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     def healthy():
         try:
@@ -35,7 +35,11 @@ def main():
             probe.bind(('127.0.0.1', port))
         except OSError:
             raise SystemExit(f'端口 {port} 已被其他服务占用。请设置 FACE_WATCH_PORT，不会停止原服务。')
-    child = subprocess.Popen([sys.executable, '-m', 'uvicorn', 'face_watch.main:app', '--host', '127.0.0.1', '--port', str(port)], cwd=root)
+    child = subprocess.Popen(
+        [sys.executable, '-m', 'uvicorn', 'face_watch.main:app', '--host', '127.0.0.1', '--port', str(port)],
+        cwd=root,
+        env={**os.environ, 'FACE_WATCH_PROFILE': 'showcase'},
+    )
     try:
         for _ in range(120):
             if child.poll() is not None:

@@ -42,10 +42,14 @@ def main():
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
             material['local_uri'] = '/bundled/'+relative.as_posix()
-    people = [{'id':p['item_id'], 'name':p['name'],
-               'paths':[bundle/m['local_uri'].removeprefix('/bundled/') for m in p['materials'] if m['kind']=='reference_image' and m.get('status')!='disabled'],
-               'materials':p['materials'], 'skip_invalid_references':True}
-              for p in state['library_items'] if p['category']=='person' and p['status']!='disabled']
+    people = []
+    for person in state['library_items']:
+        if person['category'] != 'person' or person['status'] == 'disabled':
+            continue
+        materials = [material for material in person['materials'] if material['kind'] == 'reference_image' and material.get('status') != 'disabled']
+        people.append({'id':person['item_id'], 'name':person['name'],
+                       'paths':[bundle/material['local_uri'].removeprefix('/bundled/') for material in materials],
+                       'materials':materials, 'skip_invalid_references':True})
     people = [p for p in people if p['paths']]
     analyzer = OpenCvAnalyzer(AnalyzerConfig(detector_model=ROOT/'models/face_detection_yunet_2023mar.onnx',
         recognizer_model=ROOT/'models/face_recognition_sface_2021dec.onnx', output_dir=bundle/'evidence', detection_score_threshold=.65))

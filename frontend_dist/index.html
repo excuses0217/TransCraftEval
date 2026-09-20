@@ -3,124 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101c19" />
     <title>映鉴 · 媒资审核系统</title>
-    <link rel="stylesheet" href="/styles.css?v=9" />
+    <script type="module" crossorigin src="/ui-assets/index-xEJIYuom.js"></script>
+    <link rel="stylesheet" crossorigin href="/ui-assets/index-BTq_beAy.css">
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand"><span class="brand-mark">映</span><div><b>映鉴</b><small>媒资审核系统</small></div></div>
-        <p class="workspace-label">审核工作台</p>
-        <label class="workspace-switch">工作空间<select id="workspace-purpose"><option value="production">生产审核</option><option value="validation">算法验证</option></select></label>
-        <nav class="side-nav" aria-label="主导航">
-          <button class="nav-item active" data-view="dashboard" type="button"><span>工作台</span></button>
-          <button class="nav-item" data-view="tasks" type="button"><span>审核任务</span></button>
-          <button class="nav-item" data-view="media" type="button"><span>媒资库</span></button>
-          <button class="nav-item" data-view="queue" type="button"><span>待我复核</span></button>
-          <button class="nav-item" data-view="reports" type="button"><span>审核记录</span></button>
-        </nav>
-        <p class="workspace-label">审核对象库</p>
-        <nav class="side-nav library-nav" aria-label="审核对象库">
-          <button class="nav-item" data-view="library" data-category="person" type="button"><span>人物库</span><small id="person-count">0</small></button>
-          <button class="nav-item" data-view="library" data-category="text" type="button"><span>敏感词库</span><small id="text-count">0</small></button>
-          <button class="nav-item" data-view="library" data-category="content" type="button"><span>内容库</span><small id="content-count">0</small></button>
-        </nav>
-        <details class="advanced-nav"><summary>维护工具</summary><nav class="side-nav"><button class="nav-item" data-view="analysis" type="button"><span>算法验证</span></button></nav></details>
-        <div class="side-note"><b>本地工作空间</b><p>媒资本地分析 · 审核结果持久保存</p></div>
-      </aside>
-
-      <main class="content">
-        <header class="topbar">
-          <div><p class="breadcrumb" id="breadcrumb">审核工作台 / 总览</p><h1 id="page-title">审核总览</h1></div>
-          <div class="topbar-actions"><span class="environment">本地环境</span><button class="primary" id="new-task" type="button">新建审核任务</button></div>
-        </header>
-
-        <section class="view" id="media-view">
-          <div class="media-toolbar"><p>集中管理本地视频，导入后即可创建审核任务。</p><button id="import-media" class="primary" type="button">导入素材</button></div>
-          <section class="notice"><b>本地媒资库</b><p>先预览片段，再查看检查结果或创建新的审核任务。精选素材来自历史候选区间，不代表人物已经确认，也不是准确率或召回率测试集。</p></section>
-          <label>查找影片<input id="media-search" type="search" placeholder="输入影片名称" /></label>
-          <p id="media-summary" role="status"></p><div id="media-grid" class="media-grid"></div>
-        </section>
-        <section class="view active" id="dashboard-view">
-          <section class="notice"><b>人物出镜审核</b><p>选择媒资和需要核查的人物，系统整理疑似出镜片段。您只需逐条确认、排除或留待复核。</p></section>
-          <div class="summary-grid" id="summary-grid"></div>
-          <section class="surface task-surface">
-            <div class="section-heading"><div><p class="eyebrow">任务中心</p><h2 id="tasks-heading">全部审核任务</h2></div><button class="quiet" id="dashboard-create" type="button">新建任务</button></div>
-            <div class="task-filters"><label>搜索任务<input id="task-search" placeholder="任务名称、文件名" /></label><label>执行状态<select id="task-status-filter"><option value="all">全部状态</option><option value="ready">待执行</option><option value="running">执行中</option><option value="needs_review">待复核</option><option value="completed">已完成</option><option value="failed">失败</option></select></label><span id="task-result-count"></span></div>
-            <div class="task-list" id="task-list"></div>
-          </section>
-        </section>
-
-        <section class="view" id="library-view">
-          <section class="library-hero"><div><p class="eyebrow" id="library-kicker">审核对象库</p><h2 id="library-title">人物库</h2><p id="library-description"></p></div><button class="primary" id="library-create" type="button">新建人物</button></section>
-          <section class="surface library-surface">
-            <div class="library-toolbar"><label class="search-field"><span>搜索</span><input id="library-search" placeholder="名称、别名或条目 ID" /></label><label class="filter-field"><span>分类</span><select id="library-classification-filter"><option value="all">全部分类</option></select></label><label class="filter-field"><span>状态</span><select id="library-status-filter"><option value="all">全部状态</option><option value="draft">草稿</option><option value="ready_for_material">待接入素材</option><option value="ready_for_validation">待技术验证</option><option value="active">已启用</option></select></label><span class="result-count" id="library-result-count"></span></div>
-            <div class="table-wrap"><table><thead id="library-table-head"></thead><tbody id="library-table-body"></tbody></table></div>
-            <div class="empty-library hidden" id="library-empty"><h3>没有符合条件的条目</h3><p>可以调整筛选条件，或创建新的审核对象。</p></div>
-          </section>
-        </section>
-
-        <section class="view" id="analysis-view">
-          <section class="analysis-hero"><p class="eyebrow">真实分析入口</p><h2>用真实媒资验证人物检索</h2><p>这一入口会调用当前已接通的本地人脸检索。人物库条目需要先准备清晰可用的参考图，再用独立的测试媒资运行验证。</p></section>
-          <section class="surface analysis-surface"><form id="job-form"><label>人物对象名称<input id="person" required placeholder="例如：赵本山" /></label><label>本地视频路径<input id="video-path" required placeholder="/path/to/media.mp4" /></label><label>本地参考图路径<input id="reference-path" required placeholder="/path/to/reference.jpg" /></label><button class="primary" id="submit" type="submit">运行人脸检索</button></form><div class="job-result empty" id="job-result"><p>接入媒资后，实际人脸候选会在这里按时间归并。</p></div></section>
-        </section>
-      </main>
-    </div>
-
-    <dialog id="library-dialog">
-      <form id="library-form" method="dialog">
-        <div class="dialog-head"><div><p class="eyebrow">审核对象库</p><h2 id="dialog-title">新建审核对象</h2></div><button class="icon-button" id="close-library" aria-label="关闭" type="button">关闭</button></div>
-        <label hidden>条目 ID<input id="item-id" required placeholder="person.zhao_benshan" pattern="[a-z0-9._-]+" /></label>
-        <label hidden>对象类型<select id="item-category"><option value="person">人物</option><option value="text">敏感词</option><option value="content">内容</option></select></label>
-        <label>分类<input id="item-classification" required placeholder="例如：影视演员" /></label>
-        <label>显示名称<input id="item-name" required placeholder="赵本山" /></label>
-        <label>别名（以逗号分隔）<input id="item-aliases" placeholder="赵本山老师" /></label>
-        <label>审核说明<textarea id="item-definition" placeholder="需要审核员注意哪些事项？"></textarea></label>
-        <label>素材状态<select id="item-status"><option value="draft">草稿</option><option value="ready_for_material">待接入素材</option><option value="ready_for_validation">待技术验证</option><option value="active">已启用</option></select></label>
-        <p class="form-error hidden" id="library-error"></p><button class="primary" type="submit">保存对象</button>
-      </form>
-    </dialog>
-    <dialog id="task-dialog">
-      <form id="task-form" method="dialog">
-        <div class="dialog-head"><div><p class="eyebrow">审核任务</p><h2>创建审核任务</h2></div><button class="icon-button" id="close-task" aria-label="关闭" type="button">关闭</button></div>
-        <p class="muted">1. 选择媒资　→　2. 选择人物　→　3. 提交检查</p>
-        <label>任务名称<input id="task-name-input" required placeholder="例如：牧马人复播审核" /></label>
-        <p id="task-purpose-hint" class="scope-note"></p>
-        <fieldset class="people-picker"><legend>检查范围</legend><label><input type="checkbox" checked disabled />人物画面</label><label><input type="checkbox" disabled />画面文字 · 暂未启用</label><label><input type="checkbox" disabled />语音台词 · 暂未启用</label><label><input type="checkbox" disabled />场景与行为 · 暂未启用</label></fieldset>
-        <label>选择已接入媒资<select id="task-local-media"><option value="">手动输入其他本地文件路径</option></select></label>
-        <details><summary>使用其他本地文件</summary><label>文件路径<input id="task-asset-path" placeholder="填写本机视频文件的完整路径" /></label></details>
-        <label hidden>关联审核对象<select id="task-objects" multiple size="6"></select></label>
-        <fieldset class="people-picker"><legend>需要核查的人物（可多选）</legend><input id="person-search" placeholder="搜索人物或分类" aria-label="搜索人物或分类" /><p id="person-selected-count" role="status">已选 0 人</p><div id="task-person-options"></div></fieldset>
-        <p class="muted">本次检查人物出镜，暂不包含文字、声音和剧情内容。</p>
-        <p class="form-error hidden" id="task-error"></p><button class="primary" type="submit">提交并开始检查</button>
-      </form>
-    </dialog>
-    <dialog id="material-dialog">
-      <div class="materials-dialog-content"><div class="dialog-head"><div><p class="eyebrow">参考素材</p><h2 id="material-dialog-title">加载中…</h2></div><button class="icon-button" id="close-materials" aria-label="关闭" type="button">关闭</button></div><p class="materials-note">系统只保存本地素材及其质量和验证状态；是否可用于实际检索，仍取决于清晰度、覆盖度和独立媒资验证。</p><div id="material-list" class="material-list"></div></div>
-    </dialog>
-    <section id="review-dialog" class="view review-page">
-      <div class="dialog-head"><div><p class="eyebrow">人物出镜审核</p><h2 id="review-title"></h2></div><div><button id="review-export" type="button" class="quiet">导出审核记录</button><button id="review-finish" type="button" class="primary">完成本次审核</button><button id="review-close" type="button" class="quiet">返回任务列表</button></div></div>
-      <div id="review-meta"></div><details class="object-breakdown"><summary>查看各人物的处理情况</summary><div id="review-person-stats"></div></details>
-      <div class="task-controls"><button id="detail-start" class="primary" type="button">开始检查</button><button id="detail-edit" class="quiet" type="button">修改任务范围</button><button id="detail-retry" class="quiet" type="button">保留记录，重新检查</button></div>
-      <p id="evidence-position" class="scope-note"></p>
-      <label id="reason-control">处理原因（可选）<select id="review-reason"><option value="">请选择原因</option><option value="appearance">人工对照确认</option><option value="not_target">不是目标人物</option><option value="unclear">画面不清楚</option><option value="insufficient_context">需要更多上下文</option><option value="other">其他（填写备注）</option></select></label>
-      <p id="review-error" role="alert" class="form-error"></p>
-      <div class="review-layout"><div class="review-focus"><h3 id="review-evidence-info">选择一条待复核内容</h3><div class="evidence-tabs"><button id="show-image" class="quiet" type="button">查看画面</button><button id="show-video" class="quiet" type="button">播放所在片段</button></div><video id="review-video" controls preload="metadata" hidden></video><p id="video-hint" class="muted" hidden></p><img id="review-image" alt="待核查画面，方框标出了需要查看的人物" /><div id="reference-strip"></div><details><summary>添加处理备注</summary><label><span class="sr-only">复核备注</span><textarea id="review-note" maxlength="2000" placeholder="可选，记录您的判断依据"></textarea></label></details><div id="review-actions"><button data-verdict="confirmed" class="primary">确认出现</button><button data-verdict="rejected" class="quiet">排除此条</button><button data-verdict="uncertain" class="quiet">留待复核</button><button data-verdict="pending" class="quiet">撤回复核</button></div><p id="review-feedback" role="status" aria-live="polite"></p></div><div class="finding-list"><label>片段列表<select id="review-filter"><option value="all">全部内容</option><option value="pending">未处理</option><option value="confirmed">已确认</option><option value="rejected">已排除</option><option value="uncertain">留待复核</option></select></label><div id="review-events"></div></div></div>
-    </section>
-    <dialog id="reference-preview"><div class="dialog-head"><h2>人物参考照片</h2><button id="reference-preview-close" type="button" class="quiet">返回复核</button></div><img id="reference-preview-image" alt="人物参考照片大图" /></dialog>
-    <dialog id="workspace-setup" aria-labelledby="setup-title">
-      <div class="setup-content">
-        <p class="eyebrow">映鉴 · 本地媒资审核</p><h2 id="setup-title">准备您的审核工作空间</h2>
-        <p id="setup-description">先导入要审核的视频，再选择核查人物。所有素材保存在本机。</p>
-        <section class="setup-option"><h3>使用内置素材</h3><p>导入精选片段、人物参考照片和待复核任务，快速体验完整审核流程。重复导入不会覆盖现有记录。</p><button type="button" class="primary" id="setup-defaults">导入内置素材</button><small id="setup-bundle-hint"></small></section>
-        <section class="setup-option"><h3>导入自己的视频</h3><p>支持多选 MP4，每个文件不超过 20 GB，建议 H.264 编码。视频将复制到本机系统目录；不会上传云端。首次使用还需在人物库添加核查对象和参考照片。</p><label for="setup-files">选择本地视频</label><input id="setup-files" type="file" accept=".mp4,video/mp4" multiple /><button type="button" class="primary" id="setup-upload">导入所选视频</button></section>
-        <progress id="setup-progress" max="100" value="0" hidden aria-label="视频导入进度"></progress><p id="setup-status" role="status" aria-live="polite"></p><ul id="setup-results"></ul>
-        <div class="setup-footer"><button type="button" class="quiet" id="setup-skip">暂不导入，进入工作空间</button><button type="button" class="primary" id="setup-done">完成并查看媒资库</button></div>
-      </div>
-    </dialog>
-    <script src="/app.js?v=reviewer-11"></script>
-    <script src="/review.js?v=reviewer-11"></script>
-    <script src="/onboarding.js?v=1"></script>
-    <link rel="stylesheet" href="/review.css?v=reviewer-11" />
+    <div id="root"></div>
   </body>
 </html>

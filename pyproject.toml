@@ -22,6 +22,9 @@ dependencies = [
 test = [
   "pytest==8.4.2",
 ]
+validation = [
+  "onnxruntime==1.30.0",
+]
 
 [project.scripts]
 face-watch = "face_watch.cli:main"

@@ -73,7 +73,9 @@ def test_default_import_does_not_overwrite_edits(tmp_path):
     (bundle/'catalog.json').write_text(json.dumps([{'media_id':'clip','name':'视频','path':'clip.mp4','url':'/bundled/clip.mp4'}]))
     c=workspace(tmp_path,bundle)
     assert c.post('/api/workspace/import-defaults').json()['added']=={'objects':1,'tasks':1,'media':1}
-    item.update(definition='用户修改',status='disabled')
+    assert c.post('/api/library-items/person.test/lifecycle',json={'action':'disable','note':'用户停用'}).status_code==200
+    item=c.get('/api/library-items').json()[0]
+    item.update(definition='用户修改')
     assert c.put('/api/library-items/person.test',json=item).status_code==200
     assert c.post('/api/review-tasks/task1/complete').status_code==200
     assert c.post('/api/workspace/import-defaults').json()['added']=={'objects':0,'tasks':0,'media':0}

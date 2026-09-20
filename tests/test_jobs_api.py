@@ -142,17 +142,22 @@ def test_web_ui_and_evidence_are_served(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     frontend.mkdir()
     artifacts.mkdir()
+    (frontend / "ui-assets").mkdir()
     (frontend / "index.html").write_text("<main>Face Watch</main>", encoding="utf-8")
+    (frontend / "ui-assets" / "app-hash.js").write_text("export {}", encoding="utf-8")
     (artifacts / "evidence.jpg").write_bytes(b"evidence")
     client = TestClient(
         create_app(frontend_dir=frontend, artifact_dir=artifacts)
     )
 
     page = client.get("/")
+    application_asset = client.get("/ui-assets/app-hash.js")
     evidence = client.get("/artifacts/evidence.jpg")
 
     assert page.status_code == 200
     assert "Face Watch" in page.text
+    assert page.headers["cache-control"] == "no-store"
+    assert application_asset.headers["cache-control"] == "public, max-age=31536000, immutable"
     assert evidence.status_code == 200
     assert evidence.content == b"evidence"
 
@@ -214,18 +219,18 @@ def test_user_can_add_a_library_item_without_overwriting_existing_one() -> None:
         "name": "示例演员",
         "aliases": ["示例别名"],
         "definition": "待接入授权参考图与独立测试媒资。",
-        "status": "ready_for_material",
+        "status": "draft",
     }
 
     created = client.post("/api/library-items", json=payload)
     duplicate = client.post("/api/library-items", json=payload)
 
     assert created.status_code == 201
-    assert created.json() == {
-        **payload,
-        "classification": "未分类",
-        "materials": [],
-    }
+    assert created.json()["item_id"] == payload["item_id"]
+    assert created.json()["status"] == "draft"
+    assert created.json()["materials"] == []
+    assert created.json()["validation"]["status"] == "not_started"
+    assert created.json()["lifecycle_history"][-1]["event"] == "created"
     assert duplicate.status_code == 409
 
 
